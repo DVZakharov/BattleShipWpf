@@ -1,0 +1,324 @@
+﻿<Window x:Class="BattleShipV2.GameWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:BattleShipV2"
+        mc:Ignorable="d"
+        FontSize="24" d:DataContext="{d:DesignInstance Type=local:BattleshipVM}"
+        Title="BattleShip" Height="460" Width="900" ResizeMode="NoResize" 
+        ShowInTaskbar="True" Icon="G:\Курсач\BattleShipV2\BattleShipV2\Images\icon.png">
+    <Window.Background>
+        <ImageBrush ImageSource="G:\Курсач\BattleShip\BattleShip\Images\fon.jpg" />
+    </Window.Background>
+    <Window.Resources>
+        <Style x:Key="Flat_Button" TargetType="{x:Type Button}">
+            <Setter Property="FontSize" Value="12px"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground">
+                <Setter.Value>
+                    <SolidColorBrush Opacity="1" Color="White"/>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Background" >
+                <Setter.Value>
+                    <SolidColorBrush Opacity="1" Color="#28C2FF" />
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="border"
+                        SnapsToDevicePixels="True"
+                        BorderThickness="1"
+                        BorderBrush="Gray"
+                        CornerRadius="8"
+                        Background="{TemplateBinding Background}">
+                            <Grid>
+                                <ContentPresenter Margin="2"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                RecognizesAccessKey="True" />
+                            </Grid>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="true">
+                    <Trigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation To="#D2F898"
+                                    Storyboard.TargetProperty="(Control.Background).(SolidColorBrush.Color)" 
+                                    FillBehavior="HoldEnd" Duration="0:0:0.25" AutoReverse="False" RepeatBehavior="1x"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+
+                    <Trigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <ColorAnimation
+                                Storyboard.TargetProperty="(Control.Background).(SolidColorBrush.Color)" 
+                                FillBehavior="HoldEnd" Duration="0:0:0.25" AutoReverse="False" RepeatBehavior="1x"/>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.ExitActions>
+                </Trigger>
+
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="Button" x:Key="RoundButton">
+            <Style.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="CornerRadius" Value="15" />
+                </Style>
+            </Style.Resources>
+        </Style>
+        <Style TargetType="{x:Type Button}" x:Key="MenuButton">
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="Height" Value="25" />
+            <Setter Property="Margin" Value="5,0,0,0" />
+        </Style>
+        <DataTemplate DataType="{x:Type local:CellVM}">
+            <Border BorderBrush="#80daeb" Background="Transparent"
+            BorderThickness="1"
+            Width="31" Height="31"
+            Margin="0,0,-1,-1"
+            MouseDown="Cell_MouseDown">
+                <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <Grid.RenderTransform>
+                        <TransformGroup>
+                            <RotateTransform Angle="{Binding Angle}" CenterX="15" CenterY="15"/>
+                            <ScaleTransform ScaleX="{Binding ScaleX}" ScaleY="{Binding ScaleY}" 
+                                        CenterX="15" CenterY="15"/>
+                            <SkewTransform AngleX="{Binding AngleX}" AngleY="{Binding AngleY}" CenterX="15" CenterY="15"/>
+                            <TranslateTransform X="{Binding ShiftX}" Y="{Binding ShiftY}"/>
+                        </TransformGroup>
+                    </Grid.RenderTransform>
+                    <Ellipse Width="7" Height="7" Fill="OrangeRed" 
+                     HorizontalAlignment="Center"
+                     VerticalAlignment="Center"
+                     Visibility="{Binding Miss}"/>
+                    <Path Data="M4,4 L25,25 M25,4 L4,25" 
+                     Stroke="OrangeRed" StrokeThickness="3"
+                     Visibility="{Binding Shot}"/>
+                </Grid>
+            </Border>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type local:MapVM}">
+            <Grid>
+                <ItemsControl ItemsSource="{Binding ShipsView}" Width="300" Height="300">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Rectangle Width="{Binding RankView}" Height="25" 
+                                   RadiusX="40" RadiusY="10">
+                                <Rectangle.Fill>
+                                    <LinearGradientBrush EndPoint="1,0">
+                                        <GradientStop Color="BurlyWood" Offset="0"/>
+                                        <GradientStop Color="BurlyWood" Offset="0.5"/>
+                                        <GradientStop Color="BurlyWood" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Rectangle.Fill>
+                                <Rectangle.RenderTransform>
+                                    <TransformGroup>
+                                        <RotateTransform Angle="{Binding Angle}" CenterX="12.5" CenterY="12.5"/>
+                                        <TranslateTransform X="{Binding X}" Y="{Binding Y}"/>
+                                    </TransformGroup>
+                                </Rectangle.RenderTransform>
+                            </Rectangle>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <ItemsControl ItemsSource="{Binding Map}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <ItemsControl ItemsSource="{Binding}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <StackPanel Orientation="Horizontal" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                            </ItemsControl>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Grid>
+        </DataTemplate>
+        <Style x:Key="ButtonFocusVisual">
+            <Setter Property="Control.Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Rectangle Margin="2" SnapsToDevicePixels="true" Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" StrokeThickness="1" StrokeDashArray="1 2"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <LinearGradientBrush x:Key="ButtonNormalBackground" EndPoint="0,1" StartPoint="0,0">
+            <GradientStop Color="#F3F3F3" Offset="0"/>
+            <GradientStop Color="#EBEBEB" Offset="0.5"/>
+            <GradientStop Color="#DDDDDD" Offset="0.5"/>
+            <GradientStop Color="#CDCDCD" Offset="1"/>
+        </LinearGradientBrush>
+        <SolidColorBrush x:Key="ButtonNormalBorder" Color="#FF707070"/>
+        <Style x:Key="ToggleButtonStyle1" TargetType="{x:Type ToggleButton}">
+            <Setter Property="FocusVisualStyle" Value="{StaticResource ButtonFocusVisual}"/>
+            <Setter Property="Background" Value="{StaticResource ButtonNormalBackground}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource ButtonNormalBorder}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ToggleButton}">
+                        <StackPanel Orientation="Horizontal">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                            <Border x:Name="light" Width="45" Height="25" Background="LightGray" CornerRadius="2,0,0,4">
+                                <TextBlock x:Name="lightModeOn" Text="легкий" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <Border x:Name="medium" Width="55" Height="25" Background="LightGray" CornerRadius="0,2,4,0">
+                                <TextBlock x:Name="mediumModeOn" Text="средний" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                        </StackPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Foreground" Value="#ADADAD"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="true">
+                                <Setter TargetName="light" Property="Background" Value="LightBlue"/>
+                                <Setter TargetName="lightModeOn" Property="Foreground" Value="White"/>
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="False">
+                                <Setter TargetName="medium" Property="Background" Value="LightBlue"/>
+                                <Setter TargetName="mediumModeOn" Property="Foreground" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="2.5*" />
+            <ColumnDefinition Width="0.8*" />
+            <ColumnDefinition Width="2.5*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.04*" />
+            <RowDefinition Height="0.8*" />
+            <RowDefinition Height="0.1*" />
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="1" Grid.Column="1">
+            <TextBlock Text="{Binding Time}" d:Text="0:00" FontSize="36" HorizontalAlignment="Center" Margin="0,10,0,10" />
+            <TextBlock Text="{Binding Steps}" d:Text="Шаги: 5" HorizontalAlignment="Center"/>
+            <StackPanel>
+                <TextBlock FontSize="14" HorizontalAlignment="Center" Text="Сложность бота"/>
+                <ToggleButton Click="ToggleButton_Click" Name="SelectBot"
+                HorizontalAlignment="Center" FontSize="12"
+                          Style="{StaticResource ToggleButtonStyle1}"/>
+            </StackPanel>
+
+            <Button Style="{DynamicResource MenuButton}"                     
+                Content="Старт" Click="StartStopButton_Click" 
+                Width="115" x:Name="StartStop_btn" />
+            <StackPanel>
+                <Button Style="{DynamicResource MenuButton}"                        
+                    Content="Изменить карту" x:Name="Edit_btn"
+                    Click="Edit_Button_Click" Width="115" />
+                <StackPanel x:Name="EditMenu_SP" Visibility="Hidden">
+                    <Button Style="{DynamicResource MenuButton}"
+                    Content="Случ. корабли" x:Name="RandomPos_btn"
+                    Click="Edit_Button_Click" Width="115" />
+                    <Button Style="{DynamicResource MenuButton}" 
+                    Content="Отчистить " x:Name="ClearMap_btn"
+                    Click="Edit_Button_Click" Width="115" />
+                    <Button Style="{DynamicResource MenuButton}" 
+                    Content="Ручной режим" x:Name="ManualMode_btn"
+                    Click="Edit_Button_Click" Width="115">
+                        <Button.ToolTip>
+                            <ToolTip>
+                                <StackPanel>
+                                    <TextBlock Text="Чтобы поставить корабль нажмите ЛКМ по карте; " />
+                                    <TextBlock Text="Чтобы удалить ПКМ по кораблю;" />
+                                    <TextBlock Text="Чтобы вращать корабль нажмите на колёсико мышки." />
+                                </StackPanel>
+                            </ToolTip>
+                        </Button.ToolTip>
+                    </Button>
+                    <StackPanel Orientation="Horizontal" Height="30" x:Name="ManualMode_SP" Visibility="Hidden">
+                        <TextBlock Text="Длина корабля:" FontSize="14" VerticalAlignment="Center" Margin="0,0,2,0"/>
+                        <TextBlock Text="{Binding SelectedRank}" FontSize="14" d:Text="4" Height="20" Width="14" />
+                        <StackPanel Margin="-5" Orientation="Vertical" Width="20" Height="30">
+                            <Button Style="{DynamicResource MenuButton}" Margin="0" Name="PlusRank"
+                                Content="+" Click="EditShipRank_btn" Height="15" FontWeight="Bold"
+                                FontSize="11" VerticalContentAlignment="Center" Width="11"
+                                Background="Transparent" BorderBrush="Transparent"/>
+                            <Button Style="{DynamicResource MenuButton}" Margin="2 0 0 0" Name="MinusRank"
+                                Content="-  " Click="EditShipRank_btn" Height="14" FontWeight="Bold"
+                                FontSize="11" VerticalContentAlignment="Center" Width="8" HorizontalContentAlignment="Center"
+                                Background="Transparent" BorderBrush="Transparent"/>
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+
+        <TextBlock Text="Ваша карта" Grid.Column="0" Grid.Row="1" 
+               Width="110" FontSize="20" Height="25"
+               HorizontalAlignment="Center" VerticalAlignment="Bottom" />
+        <TextBlock Text="Карта противника" Grid.Column="2" Grid.Row="1" 
+                Width="170" FontSize="20" Height="25"
+                HorizontalAlignment="Center" VerticalAlignment="Bottom" />
+        <StackPanel Grid.Row="2" Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Style="{StaticResource Flat_Button}" 
+            Grid.Column="2" Grid.Row="2" Height="25" Width="80"
+            Click="Statistics_btn" FontSize="13"
+            Content="Статистика" FontWeight="Bold"/>
+            <Button Style="{StaticResource Flat_Button}" 
+            Grid.Column="2" Grid.Row="2" Height="25" Width="55"
+            Click="Exit_Buttno_Click" Background="Red" FontSize="13"
+            Content="Выход" FontWeight="Bold" Margin="10,0,5,0" />
+        </StackPanel>
+
+        <ContentControl Content="{Binding OurMap}" 
+                    Grid.Column="0" Grid.Row="1"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"/>
+        <ContentControl Content="{Binding EnemyMap}"                         
+                    Grid.Column="2" Grid.Row="1"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"/>
+        <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" Height="30" VerticalAlignment="Top" Name="CharsOur" />
+        <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Horizontal" Height="30" VerticalAlignment="Top" Name="CharsEnemy" />
+        <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="0" Height="300" HorizontalAlignment="Left" Margin="9,0,0,0" Name ="NumOur"/>
+        <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="2" Height="300" HorizontalAlignment="Left" Margin="9,0,0,0" Name="NumEnemy"/>
+
+        <Border Background="#E51A1616" Grid.RowSpan="3" Grid.ColumnSpan="3" Visibility="Hidden" x:Name="WinBrd" MouseDown="MouseDown_WinLoseBorder">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Height="347">
+                <TextBlock Text="You Win" FontSize="100" Foreground="White" HorizontalAlignment="Center"/>
+                <TextBlock Text="To continue, click on display" FontSize="40" Foreground="White" />
+            </StackPanel>
+        </Border>
+        <Border Background="#E51A1616" Grid.RowSpan="3" Grid.ColumnSpan="3" Visibility="Hidden" x:Name="LoseBrd" MouseDown="MouseDown_WinLoseBorder">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Height="347">
+                <TextBlock Text="You Lose" FontSize="100" Foreground="White" HorizontalAlignment="Center"/>
+                <TextBlock Text="To continue, click on display" FontSize="40" Foreground="White" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>
